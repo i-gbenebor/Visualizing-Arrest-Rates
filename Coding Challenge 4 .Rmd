@@ -1,0 +1,100 @@
+---
+title: "Coding Challenge 4"
+output: pdf_document
+---
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+Race.df <- read.csv("race_clean.csv")
+```
+#Question 1 
+
+Part A:
+plot_usmaps function can take 8 arguments. The arguments are as follows: regions, include, data, values, theme, lines, labels, and label_color. 
+Part B:
+For Minnesota, the alpha code is MI and the numeric code is 27. 
+Part C:
+The dataframe should consist of two columns. 
+
+#Question 2 
+
+```{r, echo = FALSE}
+#Part A
+require(ggplot2)
+require(usmap)
+Race.df$fips <- fips(Race.df$STATE)
+
+#Part B 
+
+White.df <- subset(Race.df, RACE == "White")
+WhiteArrests.df <- data.frame(White.df$fips, White.df$ArrestRate)
+colnames(WhiteArrests.df) <- c("fips", "ArrestRate")
+
+library(usmap)
+library(ggplot2)
+plot_usmap(data = WhiteArrests.df, values = "ArrestRate") + scale_fill_continuous(low = "white", high = "red", name = "U.S. Arrest Rates") + theme(legend.position = "right") + labs(title= "Arrest Rates for White Americans")
+
+#Part C, Part D 
+NewEngland <- plot_usmap(data = WhiteArrests.df, include = c("Maine","New Hampshire", "Vermont", "Massachusetts", "Rhode Island", "Connecticut"), values = "ArrestRate") + scale_fill_continuous(low = "white", high = "red", limits = c(0.01,0.06), name = "New England Arrest Rates") + theme(legend.position = "right") + labs(title= "Arrest Rates for White Americans")
+
+NewEngland
+
+```
+
+#Question 3 
+```{r, echo = FALSE}
+Black.df <- subset(Race.df, RACE == "Black or African American")
+BlackArrests.df <- data.frame(Black.df$fips, Black.df$ArrestRate)
+colnames(BlackArrests.df) <- c("fips", "ArrestRate")
+
+Asian.df <- subset(Race.df, RACE == "Asian or Pacific Islander")
+AsianArrests.df <- data.frame(Asian.df$fips, Asian.df$ArrestRate)
+colnames(AsianArrests.df) <- c("fips", "ArrestRate")
+
+Indian.df <- subset(Race.df, RACE == "American Indian or Alaska Native")
+IndianArrests.df <- data.frame(Indian.df$fips, Indian.df$ArrestRate)
+colnames(IndianArrests.df) <- c("fips", "ArrestRate")
+
+NewEnglandWhite<- plot_usmap(data = WhiteArrests.df, include = c("Maine","New Hampshire", "Vermont", "Massachusetts", "Rhode Island", "Connecticut"), values = "ArrestRate") + scale_fill_continuous(low = "white", high = "red", name = "White Arrest Rates") + theme(legend.position = "right")
+
+NewEnglandBlack <- plot_usmap(data = BlackArrests.df, include = c("Maine","New Hampshire", "Vermont", "Massachusetts", "Rhode Island", "Connecticut"), values = "ArrestRate") + scale_fill_continuous(low = "white", high = "green",name = "Black Arrest Rates") + theme(legend.position = "right")
+
+NewEnglandAsian <- plot_usmap(data = AsianArrests.df, include = c("Maine","New Hampshire", "Vermont", "Massachusetts", "Rhode Island", "Connecticut"), values = "ArrestRate") + scale_fill_continuous(low = "white", high = "orange",name = "Asian Arrest Rates") + theme(legend.position = "right")
+
+NewEnglandIndian <- plot_usmap(data = IndianArrests.df, include = c("Maine","New Hampshire", "Vermont", "Massachusetts", "Rhode Island", "Connecticut"), values = "ArrestRate") + scale_fill_continuous(low = "white", high = "blue",name = "Indian Arrest Rates") + theme(legend.position = "right")
+
+NewEnglandWhite
+NewEnglandAsian
+NewEnglandBlack
+NewEnglandIndian
+```
+##Looking at the Majority
+
+When looking at different demographics, in New England each race differs in arrest rate. People who identify as "White" can be seen in the red graph. At first glance, New Hampshire has the highest arrest rate at .047 for White Americans.
+
+##Comparing Minorities
+
+Black Americans
+
+People who identify as "Black or African American" can be seen in the green graph. Maine and New Hampshire have the highest arrest rate for Black Americans at .14. The maximum arrest rate for black americans in New England is 197% higher than the maximum arrest rate for White Americans. 
+
+Indian Americans 
+
+People who identify as "American Indian or Alaska Native" can be seen in the orange graph. When looking at Indian Americans, the maximum arrest rate in New England is Maine at .044 and this is 6% less than the maximum arrest rate for White Americans. 
+
+Asian Americans 
+
+People who identify as "Asian or Pacific Islander" can be seen in the orange graph. When looking at Asian Americans, the highest arrest rate is in Maine at .012. The maximum arrest arte in New England is 74% less than White Americans. 
+
+###So What? 
+
+When compared to White Americans, every minority has a lower maximum arrest rate in New England besides Black Americans. There has been an ongoing conversation in history, and the media about law officers discriminating against Black Americans. The lowest arrest rate for Black Americans is in MAssachusetts at .06, this is stil higher than the maximum arrest rate in New England for White, Asian, and Indian Americans. This can suggest that Black Americans get arrested more than any demographic in New England. This crisis can be seen through various social media campaigns such as "Hands up, Don't Shoot" and "Driving while Blacak" that highlight the concern for high arrest rates among Black Americans. To further investigate the matter, it would be nice to look at county level, reason for arrest, or more demographics such as Hispanic. I'd also like to see if darker people of color are more subject to arrest than lighter people of color to determine colorisms effect on arrests. 
+
+```{r, echo = FALSE}
+Race <- c('White','Black', 'Indian', 'Asian')
+Maximum <- c(.047,.14,.044,.012)
+MaxArrestRate <- data.frame(Race,Maximum)
+ggplot(MaxArrestRate, aes(x=Race, y=Maximum)) + geom_bar(stat="identity", fill = "pink") + labs(x= "Race", y="Arrest Rate", title = "Maximum Arrest Rate in New England")
+```
